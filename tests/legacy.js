@@ -61,7 +61,7 @@ const bj=JSON.parse(fs.readFileSync(await bd.path(),'utf8'));
 ok(bj.v==2&&!bj.data.ph&&!bj.data.api&&!bj.data.salt&&Object.keys(bj.files).length==1,'backup excludes secrets, includes file');
 fs.writeFileSync(SP+'/backup.json',JSON.stringify(bj));
 // wipe + restore into fresh context
-const c2=await b.newContext({viewport:{width:390,height:844},acceptDownloads:true});const p2=await c2.newPage();await p2.goto('http://localhost:8765/index.html');
+const c2=await b.newContext({viewport:{width:390,height:844},acceptDownloads:true});const p2=await c2.newPage();await p2.clock.setFixedTime(new Date('2026-10-04T10:00:00+03:00'));await p2.goto('http://localhost:8765/index.html');
 await p2.fill('#pin','5555');await p2.click('#login button');
 await p2.evaluate(()=>go('more'));await p2.setInputFiles('#bi',SP+'/backup.json');await p2.click('.fe-dlg [data-r="1"]');await p2.waitForTimeout(600);
 ok(await p2.evaluate(()=>S.items.length==1&&S.forms.length==1&&S.resp.length==1),'restore data');
