@@ -1,6 +1,6 @@
-const {chromium}=require('/opt/npm-tools/node_modules/playwright');
+const {chromium}=(()=>{try{return require(process.env.PW||'playwright')}catch(e){return require('/opt/npm-tools/node_modules/playwright')}})();
 const fs=require('fs'),crypto=require('crypto');
-const SP=process.env.SP;let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
+const SP=process.env.SP||require('os').tmpdir();let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
 (async()=>{
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
 const ctx=await b.newContext({viewport:{width:390,height:844},acceptDownloads:true,locale:'ar-SA',timezoneId:'Asia/Riyadh'});

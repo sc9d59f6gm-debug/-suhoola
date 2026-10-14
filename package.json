@@ -1,0 +1,14 @@
+{
+  "name": "@sc9d59f6gm-debug/suhoola",
+  "version": "1.0.0",
+  "description": "سهولة – نظام إدارة أعمال العمليات (PWA يعمل بدون إنترنت)",
+  "private": false,
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "node tests/run.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  },
+  "license": "UNLICENSED"
+}

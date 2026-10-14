@@ -101,3 +101,5 @@ body.fe-lock{overflow:hidden}
 .fe-dlg{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
 .fe-dcard{background:var(--c);border:2px solid var(--au);border-radius:16px;padding:18px;width:100%;max-width:420px}.fe-dcard h3{margin:0 0 8px}.fe-dcard p{margin:0 0 14px}
 .fe-acts{display:flex;gap:8px;margin-top:12px}.fe-acts .btn{flex:1;width:auto;margin:0}
+a[role=button]{cursor:pointer}
+:focus-visible{outline:3px solid var(--au);outline-offset:2px}

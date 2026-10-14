@@ -36,6 +36,7 @@ http://localhost:8000
 ```text
 .
 ├── README.md
+├── package.json
 ├── index.html
 ├── app.css
 ├── app.js
@@ -47,6 +48,7 @@ http://localhost:8000
 ├── icon-192.png
 ├── icon-512.png
 ├── tests/
+│   ├── run.js
 │   ├── engine.js
 │   └── legacy.js
 ├── skills/
@@ -76,11 +78,13 @@ http://localhost:8000
 - `manifest.webmanifest`: إعدادات التطبيق المحمول / PWA
 
 ## الاختبارات
-شغّل خادماً محلياً على المنفذ 8765 ثم نفّذ:
 ```bash
-SP=/tmp node tests/legacy.js
-SP=/tmp node tests/engine.js
+npm install
+npx playwright install chromium   # مرة واحدة
+npm test
 ```
+يشغّل `npm test` خادماً محلياً على المنفذ 8765 ثم ينفّذ `tests/engine.js` و`tests/legacy.js` تلقائياً.
+يعمل الفحص نفسه على GitHub Actions عند كل push وطلب دمج (`.github/workflows/ci.yml`).
 
 ## المهارات داخل المستودع
 المجلد `skills/` يحتوي على وثائق مهارات تنظيمية وتقنية يمكن توسيعها لاحقاً، مثل:

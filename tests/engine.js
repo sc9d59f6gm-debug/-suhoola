@@ -1,5 +1,5 @@
 /* اختبارات محرك النماذج (المرحلة 2). التشغيل: SP=<مجلد مؤقت> node tests/engine.js  (يتطلب خادماً على المنفذ 8765) */
-const {chromium}=require(process.env.PW||'/opt/npm-tools/node_modules/playwright');
+const {chromium}=(()=>{try{return require(process.env.PW||'playwright')}catch(e){return require('/opt/npm-tools/node_modules/playwright')}})();
 const fs=require('fs'),crypto=require('crypto'),os=require('os');
 const TMP=process.env.SP||os.tmpdir(),URL='http://localhost:8765/index.html';
 let fails=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)fails++};
