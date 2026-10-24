@@ -103,3 +103,15 @@ body.fe-lock{overflow:hidden}
 .fe-acts{display:flex;gap:8px;margin-top:12px}.fe-acts .btn{flex:1;width:auto;margin:0}
 a[role=button]{cursor:pointer}
 :focus-visible{outline:3px solid var(--au);outline-offset:2px}
+
+/* ===== OutCap / المال ===== */
+.oc-ok{--oc:#1d7a4f;--ocbg:#d8efe3}.oc-warn{--oc:#a86b00;--ocbg:#faecc8}.oc-bad{--oc:#c0392b;--ocbg:#f8dcd8}
+.oc-hero{background:var(--ocbg);border:2px solid var(--oc);border-radius:16px;padding:16px;margin-bottom:12px;color:var(--t)}
+.oc-hero .amt{font-size:32px;font-weight:800;color:var(--oc);margin:4px 0}
+.oc-ring{height:12px;background:var(--b);border-radius:8px;overflow:hidden;margin:8px 0}
+.oc-ring i{display:block;height:100%;background:var(--oc)}
+.lux{display:flex;height:14px;border-radius:8px;overflow:hidden;margin:8px 0}
+.lux .n{background:#1d7a4f}.lux .w{background:#c0392b}
+.tx-big{border:2px solid var(--r)!important;background:var(--bad-bg)}
+.di-bar{position:sticky;top:calc(52px + env(safe-area-inset-top,0px));z-index:3;background:var(--g);color:#fff;padding:6px 14px;display:flex;justify-content:space-between;font-size:13px;border-bottom:2px solid var(--au)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}

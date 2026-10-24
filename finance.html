@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="سهولة مال"><meta name="theme-color" content="#0f5b3f">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
+<title>سهولة · الحد اليومي</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<style>header h1{font-size:17px}.wrap{max-width:760px;margin:0 auto;padding:12px 14px 100px}</style>
+</head><body>
+<header><h1>سهولة · الحد اليومي OutCap</h1><button type="button" onclick="thm()" aria-label="الوضع الليلي">🌓</button></header>
+<div id="view" class="wrap"></div>
+<nav id="nv"></nav>
+<div id="md" onclick="if(event.target==this)closeM()"><div class="sheet" id="sh"></div></div>
+<div id="toast" role="status"></div><div id="rep"></div>
+<script src="finance.js"></script>
+<script>
+const $=s=>document.querySelector(s),esc=FIN.esc,nd=s=>String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/٫/g,'.').trim();
+const z=n=>String(n).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());
+const rnd=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+let S={dark:null,fin:FIN.defaults()},cur='home';
+try{Object.assign(S,JSON.parse(localStorage.getItem('suhoola-fin')||'{}'));S.fin=FIN.sanitize(S.fin)}catch(e){}
+function save(){try{localStorage.setItem('suhoola-fin',JSON.stringify(S));return true}catch(e){toast('تعذّر الحفظ');return false}}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2600)}
+function go(p){cur=p;r();scrollTo(0,0)}
+function modal(h){$('#sh').innerHTML=h;$('#md').classList.add('on')}function closeM(){$('#md').classList.remove('on')}
+function thm(){S.dark=!S.dark;save();document.documentElement.dataset.theme=S.dark?'dark':'light'}
+const NAV=[['home','🏠','اليوم'],['list','📜','العمليات'],['bills','📌','التزامات'],['rep','📊','تقارير'],['set','⚙️','إعداد']];
+function r(){$('#nv').innerHTML=NAV.map(n=>`<a class="${cur==n[0]?'on':''}" onclick="go('${n[0]}')"><b>${n[1]}</b>${n[2]}</a>`).join('');$('#view').innerHTML=P[cur]()}
+const F=()=>S.fin;
+function home(){FIN.resetBills(F());const st=FIN.todayStats(F()),d=FIN.dual(FIN.monthTx(F())),ins=FIN.insights(F()),pct=st.cyc.cap?Math.min(100,Math.round(st.spent/st.cyc.cap*100)):0,rec=FIN.recover(st.over,F().recDays);
+return `<div class="di-bar oc-${st.st}"><span>حد اليوم ${st.cyc.cap.toFixed(0)}</span><span>متبقي ${st.left.toFixed(0)}</span></div>
+<div class="oc-hero oc-${st.st}"><small>OutCap</small><div class="amt">${st.spent.toFixed(0)} / ${st.cyc.cap.toFixed(0)}</div>
+<div class="oc-ring"><i style="width:${pct}%"></i></div>
+<small>${st.st=='ok'?'آمن':st.st=='warn'?'اقتراب من الحد':'تجاوزت الحد — غداً حد جديد'}</small>
+${st.over>0?`<p>تجاوز ${st.over.toFixed(0)}${rec?` · تعافي ${rec.toFixed(0)}/يوم`:''}</p>`:''}</div>
+<div class="g3"><div class="stat"><b>${d.needP}%</b>أساسيات</div><div class="stat"><b>${d.wantP}%</b>رفاهية</div><div class="stat r"><b>${FIN.smallSum(F()).toFixed(0)}</b>صغيرات</div></div>
+<div class="card"><h3>تحليل ذكي</h3>${ins.map(x=>`<p>• ${esc(x)}</p>`).join('')}</div>
+<div class="card"><h3>عملية جديدة</h3><input id="mx" inputmode="decimal" placeholder="المبلغ"><input id="mm" placeholder="المتجر">
+<select id="mc">${FIN.CATS.map(c=>`<option value="${c.id}">${c.l}</option>`).join('')}</select>
+<button class="btn p" onclick="addTx()">حفظ</button>
+<input type="file" accept=".csv" onchange="imp(this)"><small>CSV: Date, Amount, Merchant</small></div>`}
+function list(){const txs=[...F().txs].sort((a,b)=>b.d.localeCompare(a.d));
+return `<div class="card"><h3>العمليات (${txs.length})</h3>${txs.map(t=>`<div class="li ${t.amt>=F().bigAmt?'tx-big':''}"><span>${esc(t.m)}<br><small>${t.d} · ${FIN.catOf(t.c).l}</small></span><b>${t.amt}</b></div>`).join('')||'لا عمليات'}</div>`}
+function bills(){return `<div class="card"><h3>التزام</h3><input id="bn" placeholder="الاسم"><input id="ba" inputmode="decimal" placeholder="المبلغ"><input id="bd" inputmode="numeric" placeholder="يوم 1–28"><button class="btn p" onclick="addBill()">إضافة</button></div>
+<div class="card">${F().bills.map(b=>`<div class="li"><span>${esc(b.n)} · يوم ${b.day}</span><b>${b.amt}</b></div>`).join('')||'—'}</div>`}
+function rep(){const txs=FIN.monthTx(F()),top=FIN.topMerchants(txs,8),cmp=FIN.compare(F());
+return `<div class="card"><h3>التقرير</h3><p>الحالي ${cmp.cur.toFixed(0)} · السابق ${cmp.prev.toFixed(0)}</p>
+${top.map(([m,a])=>`<div class="li">${esc(m)}<b>${a.toFixed(0)}</b></div>`).join('')}
+<button class="btn p" onclick="dl(new Blob([FIN.csvReport(F())],{type:'text/csv'}),'exp.csv')">CSV</button>
+<button class="btn" onclick="pdf()">PDF</button>
+<button class="btn" onclick="dl(new Blob([JSON.stringify(FIN.jsonPack(F()))],{type:'application/json'}),'fin.json')">JSON</button>
+<input type="file" accept=".json" onchange="ij(this)"></div>`}
+function setp(){const f=F();return `<div class="card"><h3>الإعدادات</h3>
+<label>راتب</label><input id="fs" value="${f.salary}"><label>يوم الراتب</label><input id="fp" value="${f.payday}">
+<label class="chk"><input type="checkbox" id="fu" ${f.useStart?'checked':''}> رصيد بداية الدورة</label>
+<input id="fb" value="${f.startBal}" placeholder="رصيد البداية">
+<label>عملية كبيرة</label><input id="fg" value="${f.bigAmt}">
+<button class="btn p" onclick="svs()">حفظ</button>
+<p><small>330+ متجر للتصنيف · محلي بدون خادم · ${FIN.MERCHANT_COUNT} مدخلاً</small></p></div>`}
+const P={home,list,bills,rep,set:setp};
+function addTx(){const amt=Math.abs(+nd($('#mx').value)||0),m=$('#mm').value.trim(),c=$('#mc').value;if(!amt||!m)return toast('أكمل الحقول');const h=FIN.hashTx(ymd(new Date()),amt,m);if(F().txs.some(t=>t.h==h))return toast('مكرر');FIN.learn(F(),m,c);F().txs.push({id:'t'+rnd(),d:ymd(new Date()),amt,m,c,h});save();r();toast('تم')}
+function addBill(){const n=$('#bn').value.trim();if(!n)return;F().bills.push({id:'b'+rnd(),n,amt:+nd($('#ba').value)||0,day:Math.min(28,Math.max(1,+nd($('#bd').value)||1)),paid:false,last:''});save();r()}
+function svs(){const f=F();f.salary=+nd($('#fs').value)||0;f.payday=Math.min(28,Math.max(1,+nd($('#fp').value)||1));f.useStart=$('#fu').checked;f.startBal=+nd($('#fb').value)||0;f.bigAmt=+nd($('#fg').value)||300;save();go('home')}
+async function imp(el){const f=el.files[0];el.value='';if(!f)return;const {add,skip}=FIN.importRows(F(),FIN.parseCSV(await f.text()));save();r();toast('أُضيف '+add+' / تُجوهل '+skip)}
+function ij(el){const f=el.files[0];el.value='';if(!f)return;f.text().then(t=>{try{const j=JSON.parse(t);S.fin=FIN.sanitize(j.data||j);save();r();toast('استيراد')}catch(e){toast('غير صالح')}})}
+function dl(b,n){const a=document.createElement('a'),u=URL.createObjectURL(b);a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),4e3)}
+function pdf(){const txs=FIN.monthTx(F());$('#rep').innerHTML='<h1>تقرير مالي</h1><table>'+txs.map(t=>`<tr><td>${esc(t.d)}</td><td>${esc(t.m)}</td><td>${t.amt}</td></tr>`).join('')+'</table>';print()}
+document.documentElement.dataset.theme=(S.dark??matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+r();
+</script>
+</body></html>
