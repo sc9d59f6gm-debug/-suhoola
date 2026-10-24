@@ -27,7 +27,7 @@ FE.defineSchema({id:'tcol',title:'سجلات الاختبار',singular:'سجل'
     {key:'what',type:'text',label:'الإجراء',required:true},{key:'who',type:'text',label:'المسؤول'},{key:'due',type:'date',label:'الموعد'}]},
   {key:'parent',type:'ref',ref:'tcol',label:'مرتبط بـ',group:'b'}]});`;
 (async()=>{
-const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
+const b=await chromium.launch({executablePath:process.env.PW_BROWSER||chromium.executablePath()});
 async function mk(w,h){const ctx=await b.newContext({serviceWorkers:'block',viewport:{width:w||390,height:h||844},acceptDownloads:true,locale:'ar-SA',timezoneId:'Asia/Riyadh'});
   await ctx.route('**/sections.js',r=>r.fulfill({status:200,contentType:'application/javascript',body:fs.readFileSync(__dirname+'/../sections.js','utf8')+SCHEMA}));
   const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));p.on('console',m=>{if(m.type()=='error'&&!/fonts|ERR_|favicon|net::/.test(m.text()))p.errs.push(m.text())});
